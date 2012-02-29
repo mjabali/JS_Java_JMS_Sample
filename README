@@ -7,4 +7,7 @@ How to get it running:
 - Start the KWG by running $KWG_HOME/bin/gateway.start
 - Copy the JavaScript client (my_gateway_js_client.html) to $KWG_HOME/web/extras/demo/jms
 - Go to http://localhost:8001/demo/jms/javascript/my_gateway_js_client.html. Make sure the client shows up in your browser.
-
+- Start the Java client by running java MyGatewayJavaClient on command prompt or your favorite IDE. Don't forget to setup your CLASSPATH
+to include the the following jar files: com.kaazing.gateway.jms.client.java.jar and geronimo-jms_1.1_spec-1.1.jar available under $KWG_HOME/lib/client/java and $KWG_HOME/lib respectively.
+- Connect the Web client and send messages to the Kaazing WebSocket Gateway. If everything is setup correctly you should receive the messages on your Java client.
+ 
