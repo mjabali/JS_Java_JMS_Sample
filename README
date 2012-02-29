@@ -1,0 +1,10 @@
+This project demonstrates how to use a Javascript and Java clients connecting to the Kaazing WebSocket Gateway.
+
+Requirements:
+- Kaazing WebSocket Gateway JMS Edition 3.2.5
+
+How to get it running:
+- Start the KWG by running $KWG_HOME/bin/gateway.start
+- Copy the JavaScript client (my_gateway_js_client.html) to $KWG_HOME/web/extras/demo/jms
+- Go to http://localhost:8001/demo/jms/javascript/my_gateway_js_client.html. Make sure the client shows up in your browser.
+

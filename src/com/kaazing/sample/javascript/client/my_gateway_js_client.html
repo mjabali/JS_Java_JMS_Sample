@@ -1,0 +1,159 @@
+<html>
+<head>
+<script type="text/javascript" language="javascript" src="StompJms.js"></script>
+<script type="text/javascript">
+
+	var	username;
+	var password;
+    var disconnect;
+    var url;
+	var connect;
+	var connection;
+	var session;
+	var destination;
+
+function setup(){
+	username = document.getElementById("username");
+	password = document.getElementById("password");
+    disconnect = document.getElementById("disconnect");
+    url = document.getElementById("url");
+	connect = document.getElementById("connect");
+	destination = document.getElementById("destination");
+	connection = null;
+	
+	connect.onclick = handleConnect /* ion  */;
+	send.onclick = handleSend;
+	
+	console.log("Setup Done...");
+
+}
+
+function handleConnection(){
+	var stompConnectionFactory = new StompConnectionFactory(url.value);
+	console.log("Setting Up Connection to " + url.value);
+	
+	try{
+		console.log("Connecting to " + url.value + " using " + username.value + " and " + password.value + " as username and password."); 
+		var connectionFuture = stompConnectionFactory.createConnection(username.value, password.value, function(){
+			try{
+					//connection = connectionFuture.getValue();
+					//connection.setExceptionListener(handleException);
+													
+					console.log("Connected...");
+				
+					session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+					connection.start(function(){ updateConnectionButtons(true) } );
+					
+				}catch (e){
+					handleException(e);
+				}
+		});
+		
+		/*
+		var connectionFuture = stompConnectionFactory.createConnection(username.value, password.value, function(){
+			try{
+					connection = connectionFuture.getValue();
+					connection.setExceptionListener(handleException);
+													
+					console.log("Connected...");
+				
+					session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+					connection.start(function(){ updateConnectionButtons(true) } );
+					
+				}catch (e){
+					handleException(e);
+				}
+		});
+		*/
+	}
+	catch(e){
+		handleException(e);
+	}
+	
+}
+
+function handleConnect() {
+    console.log("CONNECT: " + url.value + " " + username.value);
+
+    var stompConnectionFactory = new StompConnectionFactory(url.value);
+
+    try {
+        var connectionFuture =
+            stompConnectionFactory.createConnection(username.value, password.value, function () {
+            if (!connectionFuture.exception) {
+                try {
+                    connection = connectionFuture.getValue();
+                    connection.setExceptionListener(handleException);
+
+                    console.log("CONNECTED");
+
+                    session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                    transactedSession = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
+
+                        connection.start(function () {
+                            updateConnectionButtons(true);
+                        });
+                }
+                catch (e) {
+                    handleException(e);
+                }
+            }
+            else {
+                handleException(connectionFuture.exception);
+            }
+        });
+    }
+    catch (e) {
+        handleException(e);
+    }
+}
+
+
+
+function handleSend() {
+    var dest = destination.value;
+    var producer = session.createProducer(dest);
+
+    var textMsg = session.createTextMessage(message.value);
+    producer.send(textMsg, null);
+
+    console.log("SEND: " + message.value + " " + destination.value);
+
+    producer.close();
+}
+
+
+function updateConnectionButtons(connected) {
+	console.log("Updating Connection Buttons...");
+    connect.disabled = connected;
+    disconnect.disabled = !connected;
+    subscribe.disabled = !connected;
+    send.disabled = !connected;
+    unsubscribe.disabled = !connected;
+    begin.disabled = !connected;
+    
+}
+
+function handleException(e) {
+    console.log("EXCEPTION: " + e);
+}
+
+</script>
+
+</head>
+<body onload="setup()" style="background-color:transparent">
+<div name="controls">
+	<label>Location:  </label><input id="url" size="25" value="ws://localhost:8001/jms"><br/>
+    <label>User Name: </label><input id="username" size="25" value="marcelo"><br/>
+    <label>Password:  </label><input type="password" id="password" size="25" value="password"><br/>
+	<label>Destination:  </label><input id="destination" size="50" value="/topic/myTopic"><br/>
+    <button id="connect">Connect</button>&nbsp;
+    <button id="disconnect">Disconnect</button><br/>
+</div>
+<div name="message">
+<label>Message:</label><br/>
+<textarea rows="20" cols="40">
+</textarea><br/>
+<button id="send">Send</button>
+</div>
+</html>
